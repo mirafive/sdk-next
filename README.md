@@ -26,7 +26,7 @@ npm install @mirafive/sdk-next @mirafive/sdk-react @mirafive/sdk-browser @mirafi
 ```
 
 Peers: `next` ^15.1 or ^16, `react` ≥ 18.3, `@mirafive/sdk-react`,
-`@mirafive/sdk-browser` and (for `/server` only) `@mirafive/sdk-server`, all ^0.5.0.
+`@mirafive/sdk-browser` and (for `/server` only) `@mirafive/sdk-server`, all ^1.0.0.
 
 ## Quickstart
 
