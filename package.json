@@ -43,7 +43,8 @@
     "format:check": "oxfmt --check",
     "size": "size-limit",
     "example": "sh scripts/example.sh",
-    "check": "bun run format:check && bun run lint && bun run typecheck && bun run test && bun run build && publint --strict && attw --pack --profile esm-only && size-limit"
+    "check": "bun run format:check && bun run lint && bun run typecheck && bun run test && bun run build && publint --strict && attw --pack --profile esm-only && size-limit",
+    "prepublishOnly": "bun run check"
   },
   "dependencies": {
     "server-only": "^0.0.1"
