@@ -19,6 +19,8 @@ vi.mock("next/server", () => ({
 }))
 
 vi.mock("next/headers", () => ({ headers: async () => request }))
+// Next resolves server-only to an empty module on the server; test/server-only.test.ts covers the real one.
+vi.mock("server-only", () => ({}))
 
 const seed = "3f9a1c0b7e2d"
 // With this seed user-42 buckets into variant b.
@@ -40,7 +42,7 @@ const pricing: Flag = {
   c: "s",
   w: 1
 }
-const hostile = "</script><!-- "
+const hostile = "</script><!--\u2028"
 const document: FlagDocument = {
   v: 1,
   at: Date.now(),

@@ -45,6 +45,9 @@
     "example": "sh scripts/example.sh",
     "check": "bun run format:check && bun run lint && bun run typecheck && bun run test && bun run build && publint --strict && attw --pack --profile esm-only && size-limit"
   },
+  "dependencies": {
+    "server-only": "^0.0.1"
+  },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
     "@mirafive/sdk-browser": "file:../sdk-browser",
@@ -98,7 +101,10 @@
       "path": "dist/server.js",
       "import": "*",
       "gzip": true,
-      "limit": "1 kB"
+      "limit": "1 kB",
+      "ignore": [
+        "server-only"
+      ]
     }
   ],
   "engines": {

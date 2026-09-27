@@ -1,3 +1,5 @@
+// oxlint-disable-next-line import/no-unassigned-import -- it exists for its side effect: a build error in client code
+import "server-only"
 import { type Events, Mira } from "@mirafive/sdk-server"
 import { type FlagUnit, MiraFlags, type UserFlags } from "@mirafive/sdk-server/flags"
 import { after } from "next/server"

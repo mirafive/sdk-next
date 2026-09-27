@@ -8,9 +8,9 @@ feature flags from MIRA FIVE, hosted in the EU. App Router first; Pages Router c
 
 | Import | min + gzip |
 |---|---|
-| `@mirafive/sdk-next` (client) | 0.45 kB |
-| `@mirafive/sdk-next` + `@mirafive/sdk-react` | 0.88 kB |
-| `@mirafive/sdk-next/server` | 0.56 kB |
+| `@mirafive/sdk-next` (client) | 0.73 kB |
+| `@mirafive/sdk-next` + `@mirafive/sdk-react` | 1.25 kB |
+| `@mirafive/sdk-next/server` | 0.57 kB |
 
 Measured with the peers external (`react`, `next`, `@mirafive/sdk-browser`,
 `@mirafive/sdk-server`, and `@mirafive/sdk-react` in the first row): these are the bytes
@@ -97,24 +97,27 @@ export function Providers({ bootstrap, children }: { bootstrap: string; children
 ```
 
 ```tsx
-// app/layout.tsx
-import { flagsFor, MiraFlagsScript } from "@mirafive/sdk-next/server"
+// app/layout.tsx: Providers replaces the plain <MiraProvider> from above
+import { flagsFor } from "@mirafive/sdk-next/server"
 import { Providers } from "./providers"
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const flags = await flagsFor({ userId: session?.userId }) // your own pseudonymous id, if signed in
-  const bootstrap = flags.bootstrap()
 
   return (
     <html lang="en">
       <body>
-        <MiraFlagsScript flags={bootstrap} />
-        <Providers bootstrap={bootstrap}>{children}</Providers>
+        <Providers bootstrap={flags.bootstrap()}>{children}</Providers>
       </body>
     </html>
   )
 }
 ```
+
+The provider renders the `<script type="application/json" id="mirafive-flags">` block
+from `bootstrap` itself, so the browser SDK and the hooks start from the same answers.
+Render `<MiraFlagsScript>` yourself only where no provider gets the bootstrap (see the
+Pages Router notes); never both.
 
 ```tsx
 // any client component
@@ -161,15 +164,17 @@ pageview then shows in the source's live view. For the server side, send
 
 - `<MiraProvider websiteKey? host? mode? plugins? flushAt? flushAfterMs? trackLocalhost? bootstrap?>`:
   creates the browser client once, on the first render in the browser, and keeps it for
-  the page's lifetime (later prop changes are ignored). `websiteKey` defaults to
-  `process.env.NEXT_PUBLIC_MIRAFIVE_KEY`. `pageviews()` is added unless `plugins` already
-  holds one. `bootstrap` is `flags.bootstrap()` from `flagsFor()`. Without a key it sends
-  nothing and warns once in development.
+  the page's lifetime (later prop changes are ignored; in development a changed plugin set
+  is warned about). `websiteKey` defaults to `process.env.NEXT_PUBLIC_MIRAFIVE_KEY`.
+  `pageviews()` is added unless `plugins` already holds one. `bootstrap` is
+  `flags.bootstrap()` from `flagsFor()`, or a `FlagBootstrap`: the provider renders it as
+  the `mirafive-flags` block and hands it to the hooks. Without a key it sends nothing and
+  warns once, in every build.
 - `useMira()`, `useFlag(key, fallback)`, `useFlagConfig(key, fallback)`,
   `useTrackOnMount(name, properties?)`: re-exported from `@mirafive/sdk-react`.
 - `type MiraProviderProps`, `type FlagBootstrap`.
 
-`@mirafive/sdk-next/server`:
+`@mirafive/sdk-next/server` (imports `server-only`: Next refuses it in a client component):
 
 - `mira<Events>(): Mira<Events>`: one `Mira` per process from `MIRAFIVE_SECRET_KEY` and
   `MIRAFIVE_HOST`, flushed with `after()` when called inside a request. Outside one
@@ -180,7 +185,7 @@ pageview then shows in the source's live view. For the server side, send
   `anonymousId`, `properties`, `consent`, `optedOut`.
 - `<MiraFlagsScript flags={UserFlags | string} />`: the escaped
   `<script type="application/json" id="mirafive-flags">` block, from a `UserFlags` or the
-  string `bootstrap()` returned.
+  string `bootstrap()` returned. Only for pages whose provider gets no `bootstrap`.
 - `type FlagUnit`, `type UserFlags`.
 
 ## Framework / runtime notes
@@ -188,22 +193,71 @@ pageview then shows in the source's live view. For the server side, send
 - **Why `websiteKey`, not `key`:** React reserves the `key` prop; a component never
   receives it.
 - **Hydration:** flag hooks render the `bootstrap` prop on the server and during
-  hydration, then the browser SDK's answers. Pass the same string to `MiraFlagsScript`
-  and the provider. Without `flags()` in `plugins`, hooks fall back after hydration.
+  hydration, then the browser SDK's answers, re-rendering only when an answer really
+  changes. A bootstrap older than 7 days is ignored, as the browser SDK ignores it.
+  Without `flags()` in `plugins`, hooks fall back after hydration.
 - **Caching:** `flagsFor()` reads request headers, so the page is dynamic and Next sends
   `Cache-Control: private, no-cache, no-store`, as a bootstrap block requires. Do not put
   a flag read inside `"use cache"`.
+- **`cacheComponents` (Next 16):** a request-time read outside `<Suspense>` fails the
+  build. Move `flagsFor()` and the provider that gets its bootstrap into a component
+  wrapped in `<Suspense>`, or read flags in the page rather than the root layout.
+- **`export const dynamic = "force-static"`:** `headers()` is empty there, so
+  `flagsFor()` cannot see opt-outs and a static page must not carry per-user flags. Leave
+  such pages without a bootstrap; the browser SDK loads flags after the page starts.
 - **Runtimes:** Node.js and Edge. `after()` keeps the function alive on Vercel until the
   flush finishes.
 - **Navigation:** the `pageviews()` plugin counts App Router and Pages Router navigations
   through the History API; there is no `usePathname` wiring and no `Suspense` boundary.
 - **Pages Router:** put `<MiraProvider>` in `pages/_app.tsx`; the hooks work unchanged.
-  `flagsFor()` needs the App Router (`next/headers`). In `getServerSideProps` use
-  `MiraFlags` from `@mirafive/sdk-server/flags` with
-  `optedOut: req.headers["sec-gpc"] === "1" || req.headers["dnt"] === "1"`, pass
-  `flags.bootstrap()` as a prop to the provider and render `<MiraFlagsScript>`, and send
-  `bootstrapHeaders` on the response. `after()` does not run in the Pages Router:
-  `await mira().flush()` before an API route returns.
+  The Pages Router loads packages unbundled, where `server-only` throws, so add
+  `transpilePackages: ["@mirafive/sdk-next"]` to `next.config` before importing
+  `@mirafive/sdk-next/server`. `flagsFor()` needs the App Router (`next/headers`); use
+  `MiraFlags` from `@mirafive/sdk-server/flags` and render the block in
+  `pages/_document.tsx`:
+
+  ```tsx
+  import { MiraFlags, bootstrapHeaders } from "@mirafive/sdk-server/flags"
+  import { MiraFlagsScript } from "@mirafive/sdk-next/server"
+  import Document, { type DocumentContext, Head, Html, Main, NextScript } from "next/document"
+
+  const flags = new MiraFlags({ key: process.env.MIRAFIVE_SECRET_KEY })
+
+  export default class MyDocument extends Document<{ bootstrap: string }> {
+    static async getInitialProps(context: DocumentContext) {
+      const initial = await Document.getInitialProps(context)
+      const headers = context.req?.headers ?? {}
+      const user = await flags.for({
+        userId: undefined, // your own pseudonymous id, if signed in
+        optedOut: headers["sec-gpc"] === "1" || headers["dnt"] === "1"
+      })
+
+      context.res?.setHeader("Cache-Control", bootstrapHeaders["Cache-Control"])
+      return { ...initial, bootstrap: user.bootstrap() }
+    }
+
+    render() {
+      return (
+        <Html>
+          <Head />
+          <body>
+            <MiraFlagsScript flags={this.props.bootstrap} />
+            <Main />
+            <NextScript />
+          </body>
+        </Html>
+      )
+    }
+  }
+  ```
+
+  The browser SDK starts from that block; the hooks render fallbacks on the server and
+  switch after hydration. Only pages rendered per request (`getServerSideProps`) get a
+  visitor's block; a statically optimized page gets one from build time, which carries no
+  visitor and which the browser SDK refreshes once it is older than 60 seconds. To render flags on the server as well, compute the bootstrap in
+  `getServerSideProps` and pass it to `<MiraProvider bootstrap>` in `_app` instead (then
+  drop `MiraFlagsScript`: the provider renders the block). `after()` does not run in the
+  Pages Router: `await mira().flush()` before an API route returns.
 - **CSP:** the bootstrap block is `type="application/json"`, which `script-src` does not
   govern. Allow `connect-src https://events.mirafive.io`.
 
@@ -233,12 +287,16 @@ Add MIRA FIVE analytics (and feature flags) to this Next.js app with @mirafive/s
    That alone counts pageviews on every navigation; do not add usePathname effects.
    Track in client components with useMira().track(name, props) or useTrackOnMount(name, props);
    on the server with mira().track(name, { userId, properties }) from "@mirafive/sdk-next/server".
-   For flags: create app/providers.tsx ("use client") rendering
-   <MiraProvider bootstrap={bootstrap} plugins={[flags()]}> (flags from "@mirafive/sdk-browser/flags");
-   in the layout: const flags = await flagsFor({ userId }); const bootstrap = flags.bootstrap();
-   render <MiraFlagsScript flags={bootstrap} /> and <Providers bootstrap={bootstrap}>.
-   Read flags with useFlag(key, fallback) / useFlagConfig(key, fallback).
-   Pages Router: <MiraProvider> in pages/_app.tsx; see the README's Pages Router notes.
+   For flags: create app/providers.tsx ("use client") exporting Providers, which renders
+   <MiraProvider bootstrap={bootstrap} plugins={[flags()]}> (flags from "@mirafive/sdk-browser/flags"),
+   and REPLACE the <MiraProvider> in app/layout.tsx with it (one provider, never nested):
+   const flags = await flagsFor({ userId }); ... <Providers bootstrap={flags.bootstrap()}>.
+   The provider renders the flags block itself: do not add <MiraFlagsScript> as well.
+   If next.config has cacheComponents: true, wrap that part in <Suspense>. Do not read flags in
+   force-static pages. Read flags with useFlag(key, fallback) / useFlagConfig(key, fallback).
+   Pages Router: <MiraProvider> in pages/_app.tsx; for server helpers add
+   transpilePackages: ["@mirafive/sdk-next"] to next.config; flags per the README's Pages Router
+   notes (<MiraFlagsScript> in pages/_document.tsx).
 4. Keep the default consentless mode: it needs no banner. Only if a consent manager exists and ids
    are wanted: plugins={[identity()]} from "@mirafive/sdk-browser/identity" plus mode="full" in the
    client providers file, and useMira().consent({ statistics, experiments, targeting }) in its callback.
@@ -253,7 +311,10 @@ Facts for agents:
 - Imports (client, `"use client"`): `import { MiraProvider, useMira, useFlag, useFlagConfig, useTrackOnMount } from "@mirafive/sdk-next"`.
   Plugins: `import { flags } from "@mirafive/sdk-browser/flags"`, `/identity`,
   `/autocapture`, `/search`, `/experiments`. `pageviews()` is added for you.
-- Imports (server only): `import { mira, flagsFor, MiraFlagsScript } from "@mirafive/sdk-next/server"`.
+- Imports (server only): `import { mira, flagsFor, MiraFlagsScript } from "@mirafive/sdk-next/server"`;
+  the entry imports `server-only`, so importing it from a `"use client"` file fails the build.
+- One `<MiraProvider>` per app. With flags it lives in a `"use client"` providers file and
+  gets `bootstrap={flags.bootstrap()}`; it renders the flags block itself.
 - Env vars: `NEXT_PUBLIC_MIRAFIVE_KEY` (public website key, inlined at build),
   `MIRAFIVE_SECRET_KEY` (server only), `MIRAFIVE_HOST` (optional, server, default
   `https://events.mirafive.io`); the provider's `host` prop sets the browser host.

@@ -40,12 +40,16 @@ React in `vitest.config.ts` and the example installs tarballs instead.
   React reserves `key` (API.md still says `key`).
 - Thin by design: no transport, no evaluator, no router hooks. Pageviews come from
   sdk-browser's `pageviews()`, which the provider adds unless `plugins` holds one.
-- The secret key is read only in `src/server.ts`. Nothing in the client entry may import
-  `@mirafive/sdk-server`, `next/headers` or `next/server`.
+- The secret key is read only in `src/server.ts`, which imports `server-only` (a runtime
+  dependency, resolved to an empty module by Next's server bundles). Nothing in the client
+  entry may import `@mirafive/sdk-server`, `next/headers` or `next/server`.
+- The provider renders the `mirafive-flags` block from `bootstrap`; docs never pair it
+  with `MiraFlagsScript`. Pages Router users need `transpilePackages` (unbundled,
+  `server-only` throws).
 - Server helpers never throw for transport reasons, and never because `after()` is
   unavailable (outside a request).
 - Bundle size: client entry ≤ 1.2 kB, server entry ≤ 1 kB (min + gzip, peers external).
-  No runtime dependencies.
+  No runtime dependencies besides `server-only`.
 - `sideEffects: false` must stay true.
 - Comments only for a non-obvious constraint, one or two lines.
 - Do not run git write commands unless asked; the maintainer commits.
