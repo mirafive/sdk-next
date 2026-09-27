@@ -8,10 +8,10 @@
     "start": "next start"
   },
   "dependencies": {
-    "@mirafive/sdk-browser": "file:../.packs/mirafive-sdk-browser-1.0.0.tgz",
+    "@mirafive/sdk-browser": "^1.0.0",
     "@mirafive/sdk-next": "file:../.packs/mirafive-sdk-next-1.0.0.tgz",
-    "@mirafive/sdk-react": "file:../.packs/mirafive-sdk-react-1.0.0.tgz",
-    "@mirafive/sdk-server": "file:../.packs/mirafive-sdk-server-1.0.0.tgz",
+    "@mirafive/sdk-react": "^1.0.0",
+    "@mirafive/sdk-server": "^1.0.0",
     "next": "^16.3.6",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
@@ -23,9 +23,6 @@
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "@mirafive/sdk-browser": "file:../.packs/mirafive-sdk-browser-1.0.0.tgz",
-    "@mirafive/sdk-next": "file:../.packs/mirafive-sdk-next-1.0.0.tgz",
-    "@mirafive/sdk-react": "file:../.packs/mirafive-sdk-react-1.0.0.tgz",
-    "@mirafive/sdk-server": "file:../.packs/mirafive-sdk-server-1.0.0.tgz"
+    "@mirafive/sdk-next": "file:../.packs/mirafive-sdk-next-1.0.0.tgz"
   }
 }

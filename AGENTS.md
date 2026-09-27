@@ -12,7 +12,7 @@ bun install --frozen-lockfile
 bun run check            # format, lint, typecheck, test, build, publint, attw, size-limit
 bun run test             # vitest: client (happy-dom) and server (node, mocked next/headers + after)
 bun run size             # size-limit against the limits in package.json (peers external)
-bun run example          # pack this repo and its siblings, install examples/app-router, next build
+bun run example          # pack this repo, install examples/app-router, next build
 ```
 
 ## Layout
@@ -20,24 +20,22 @@ bun run example          # pack this repo and its siblings, install examples/app
 - `src/index.ts`: client entry, `"use client"` first line of `dist/index.js`.
 - `src/server.ts`: `/server` entry; `next/headers` is imported lazily inside `flagsFor()` so
   the entry also loads where `next/headers` is unavailable (Pages Router, scripts).
-- `examples/app-router`: a living example, built by `bun run example` from packed tarballs
-  (`examples/.packs`, ignored). Not in the npm package (`files: ["dist"]`). Its
+- `examples/app-router`: a living example, built by `bun run example` from a packed tarball of this
+  repo (`examples/.packs`, ignored). Not in the npm package (`files: ["dist"]`). Its
   `turbopack.root` only exists because it sits inside this repo.
 
-## Local dependencies
+## Dependencies
 
-`@mirafive/sdk-browser`, `@mirafive/sdk-server` and `@mirafive/sdk-react` are `file:../…`
-devDependencies plus `overrides` entries until they are published; the peer ranges stay
-`^1.0.0`. Build the siblings' `dist/` first if missing. Once 1.0.0 is on npm, switch the
-devDependencies to `^1.0.0` and drop `overrides`; the example then installs from npm too.
-A `file:` directory install mirrors the sibling's own `node_modules`, so tests dedupe
-React in `vitest.config.ts` and the example installs tarballs instead.
+`@mirafive/sdk-browser`, `@mirafive/sdk-server` and `@mirafive/sdk-react` are ordinary
+`^1.0.0` dependencies from npm; the example installs them from npm too and packs only this
+repo. To try an unreleased sibling change, build it and `bun link` it; never commit a
+`file:` path or `overrides`.
 
 ## Rules
 
 - API.md is the contract for this package's public surface. Do not add, rename or
   remove exports without changing API.md first. The provider prop is `websiteKey` because
-  React reserves `key` (API.md still says `key`).
+  React reserves `key`.
 - Thin by design: no transport, no evaluator, no router hooks. Pageviews come from
   sdk-browser's `pageviews()`, which the provider adds unless `plugins` holds one.
 - The secret key is read only in `src/server.ts`, which imports `server-only` (a runtime
