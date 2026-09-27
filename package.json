@@ -1,7 +1,7 @@
 {
   "name": "@mirafive/sdk-next",
   "version": "1.0.0",
-  "description": "MIRA FIVE for Next.js: a client provider with flag hooks, and server helpers for events and flags that flush with after().",
+  "description": "MIRA FIVE SDK for Next.js",
   "keywords": [
     "ab-testing",
     "analytics",
