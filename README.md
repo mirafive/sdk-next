@@ -80,8 +80,10 @@ export async function POST(request: Request) {
 A working App Router app lives in [`examples/app-router`](examples/app-router)
 (`bun run example` packs the SDKs, installs them as npm would, and runs `next build`).
 
+For revenue, add `payment_id` (1–255 characters) to the properties next to `revenue` and `currency`: the payment provider's id of the payment. For Stripe pass the Checkout Session id on the success page or the PaymentIntent id from a webhook, for example `mira().track("order completed", { properties: { revenue: 49, currency: "EUR", payment_id: paymentIntent.id } })`. MIRA FIVE merges the event with the payment it imports from your connected Stripe account, so the sale counts once.
+
 Verify it: open a page on a deployed host (not `localhost`) and look for
-`POST https://events.mirafive.io/v1/batch/mf_…` answering `202` in the network tab; the
+`POST https://collect.mirafive.io/v1/batch/mf_…` answering `202` in the network tab; the
 pageview then shows in the source's live view. For the server side, send
 `$install_check` once: `await mira().send([{ name: "$install_check" }])` resolves to
 `{ accepted: 0, dropped: 1, reason: "install_check" }` when the secret key and host work.
@@ -132,7 +134,7 @@ pageview then shows in the source's live view. For the server side, send
   `transpilePackages: ["@mirafive/sdk-next"]` to `next.config` before importing
   `@mirafive/sdk-next/server`. `after()` does not run in the Pages Router:
   `await mira().flush()` before an API route returns.
-- **CSP:** allow `connect-src https://events.mirafive.io`.
+- **CSP:** allow `connect-src https://collect.mirafive.io`.
 
 ## Troubleshooting
 
@@ -165,7 +167,7 @@ Add MIRA FIVE analytics to this Next.js app with @mirafive/sdk-next.
    are wanted: plugins={[identity()]} from "@mirafive/sdk-browser/identity" plus mode="full" in the
    client providers file, and useMira().consent({ statistics }) in its callback.
 5. Verify: run next build; open a deployed page and check the network tab for
-   POST https://events.mirafive.io/v1/batch/<key> answering 202; server side,
+   POST https://collect.mirafive.io/v1/batch/<key> answering 202; server side,
    await mira().send([{ name: "$install_check" }]) answers reason "install_check". Report what changed.
 Do not add other analytics libraries, cookies or consent banners.
 ```
@@ -180,7 +182,7 @@ Facts for agents:
 - One `<MiraProvider>` per app. Plugins are functions, so set `plugins` from a `"use client"` file.
 - Env vars: `NEXT_PUBLIC_MIRAFIVE_KEY` (public website key, inlined at build),
   `MIRAFIVE_SECRET_KEY` (server only), `MIRAFIVE_HOST` (optional, server, default
-  `https://events.mirafive.io`); the provider's `host` prop sets the browser host.
+  `https://collect.mirafive.io`); the provider's `host` prop sets the browser host.
 - Never ship `MIRAFIVE_SECRET_KEY` to a browser bundle; a secret key in a browser is
   refused and marked exposed. Never prefix it with `NEXT_PUBLIC_`.
 - The provider prop is `websiteKey`, not `key` (React reserves `key`). `plugins` holds

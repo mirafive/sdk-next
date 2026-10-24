@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Revenue events may carry `payment_id`, the payment provider's id of the payment (1–255 characters), next to `revenue` and `currency`. Nothing changes in the API: pass it in the properties. The README shows a Stripe example.
+- The default ingest host is `https://collect.mirafive.io`.
+
 - **Breaking:** feature flags and experiments are removed. Gone from the client entry:
   `useFlag`, `useFlagConfig`, the `FlagBootstrap` type, the `bootstrap` prop of
   `<MiraProvider>` and the `mirafive-flags` block it rendered. Gone from `/server`:
