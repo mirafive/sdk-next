@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking:** feature flags and experiments are removed. Gone from the client entry:
+  `useFlag`, `useFlagConfig`, the `FlagBootstrap` type, the `bootstrap` prop of
+  `<MiraProvider>` and the `mirafive-flags` block it rendered. Gone from `/server`:
+  `flagsFor()`, `<MiraFlagsScript>`, `FlagUnit` and `UserFlags`. The server entry no longer
+  reads `next/headers`. Events, pageviews, `useMira`, `useTrackOnMount`, `mira()`, consent and
+  opt-out are unchanged.
+- Statistics is the only consent purpose; `experiments` and `targeting` are gone. A consent
+  call that still passes either key is accepted and the keys are ignored.
+
 ## 1.0.0 — 2026-09-27
 
 First release on the v1 protocol, written from scratch over `@mirafive/sdk-react`,

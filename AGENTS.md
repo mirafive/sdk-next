@@ -2,8 +2,8 @@
 
 `@mirafive/sdk-next`: MIRA FIVE for Next.js, a `"use client"` provider over
 `@mirafive/sdk-react` and a `/server` entry over `@mirafive/sdk-server`. Part of the MIRA
-FIVE SDK family; the wire contract, flag semantics and public API live in
-[mirafive/protocol](https://github.com/mirafive/protocol) (PROTOCOL.md, FLAGS.md, API.md).
+FIVE SDK family; the wire contract and public API live in
+[mirafive/protocol](https://github.com/mirafive/protocol) (PROTOCOL.md, API.md).
 
 ## Commands
 
@@ -18,8 +18,7 @@ bun run example          # pack this repo, install examples/app-router, next bui
 ## Layout
 
 - `src/index.ts`: client entry, `"use client"` first line of `dist/index.js`.
-- `src/server.ts`: `/server` entry; `next/headers` is imported lazily inside `flagsFor()` so
-  the entry also loads where `next/headers` is unavailable (Pages Router, scripts).
+- `src/server.ts`: `/server` entry; `next/headers` is imported 
 - `examples/app-router`: a living example, built by `bun run example` from a packed tarball of this
   repo (`examples/.packs`, ignored). Not in the npm package (`files: ["dist"]`). Its
   `turbopack.root` only exists because it sits inside this repo.
@@ -41,9 +40,7 @@ repo. To try an unreleased sibling change, build it and `bun link` it; never com
 - The secret key is read only in `src/server.ts`, which imports `server-only` (a runtime
   dependency, resolved to an empty module by Next's server bundles). Nothing in the client
   entry may import `@mirafive/sdk-server`, `next/headers` or `next/server`.
-- The provider renders the `mirafive-flags` block from `bootstrap`; docs never pair it
-  with `MiraFlagsScript`. Pages Router users need `transpilePackages` (unbundled,
-  `server-only` throws).
+- Pages Router users need `transpilePackages` (unbundled, `server-only` throws).
 - Server helpers never throw for transport reasons, and never because `after()` is
   unavailable (outside a request).
 - Bundle size: client entry ≤ 1.2 kB, server entry ≤ 1 kB (min + gzip, peers external).
