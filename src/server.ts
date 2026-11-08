@@ -1,27 +1,55 @@
-// oxlint-disable-next-line import/no-unassigned-import -- it exists for its side effect: a build error in client code
-import "server-only"
-import { type Events, Mira } from "@mirafive/sdk-server"
-import { after } from "next/server"
+import { Mira, type EventMap, type MiraOptions } from "@mirafive/node";
+/**
+ * `@mirafive/next/server`: server events from Route Handlers, Server Actions, Server Components
+ * and middleware, delivered after the response is sent.
+ *
+ * ```ts
+ * import { mira } from "@mirafive/next/server";
+ *
+ * export async function POST(request: Request) {
+ *   const order = await createOrder(request);
+ *   mira().revenue({ userId: order.userId, amount: order.totalCents, currency: "EUR", entryId: `order:${order.id}` });
+ *   return Response.json(order);
+ * }
+ * ```
+ */
+import { after } from "next/server";
 
-let client: Mira | undefined
+export {
+  eventIdFor,
+  Mira,
+  MiraError,
+  type EventMap,
+  type GroupInput,
+  type IdentifyInput,
+  type MiraOptions,
+  type RevenueInput,
+  type TouchpointInput,
+  type TrackInput,
+} from "@mirafive/node";
 
-const shared = (): Mira =>
-  (client ??= new Mira({ key: process.env.MIRAFIVE_SECRET_KEY, host: process.env.MIRAFIVE_HOST }))
-
-// after() throws outside a request (module scope, a script); the client's own timer flushes there.
-const later = (task: () => unknown): void => {
-  try {
-    after(task)
-  } catch {
-    // Not in a request.
-  }
+if (typeof window !== "undefined") {
+  throw new Error(
+    "MIRA FIVE: @mirafive/next/server was imported in browser code. It holds the secret key; use @mirafive/next in client components.",
+  );
 }
 
-/** The process-wide server client from `MIRAFIVE_SECRET_KEY`, flushed after the current response. */
-export const mira = <E extends Events = Events>(): Mira<E> => {
-  const instance = shared()
+let client: Mira | undefined;
 
-  later(() => instance.flush())
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the event map only narrows track()
-  return instance as unknown as Mira<E>
+/**
+ * The process-wide server client (secret key from `MIRAFIVE_SECRET_KEY`), flushed with `after()`
+ * once the current response is sent, so no request waits for analytics. Outside a request
+ * (scripts, module scope) its own timer sends.
+ *
+ * Options apply when the client is first made.
+ */
+export function mira<Events extends EventMap = EventMap>(options?: MiraOptions): Mira<Events> {
+  client ??= new Mira(options);
+  const instance = client;
+  try {
+    after(() => instance.flush());
+  } catch {
+    // Not inside a request; the client's timer flushes.
+  }
+  return instance as unknown as Mira<Events>;
 }

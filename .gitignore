@@ -1,11 +1,5 @@
 node_modules/
 dist/
-coverage/
-*.tgz
+*.tsbuildinfo
 .DS_Store
-examples/.packs/
-examples/*/node_modules/
-examples/*/.next/
-examples/*/bun.lock
-examples/*/next-env.d.ts
-examples/*/.env.local
+*.log

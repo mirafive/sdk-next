@@ -1,31 +1,28 @@
 # Changelog
 
-## Unreleased
+## 2.0.0 — 2026-11-08
 
-- Revenue events may carry `payment_id`, the payment provider's id of the payment (1–255 characters), next to `revenue` and `currency`. Nothing changes in the API: pass it in the properties. The README shows a Stripe example.
-- The default ingest host is `https://collect.mirafive.io`.
+A rewrite for the current MIRA FIVE platform: consent tiers, the revenue ledger, touchpoints and
+the `/v1/batch` wire format.
 
-- **Breaking:** feature flags and experiments are removed. Gone from the client entry:
-  `useFlag`, `useFlagConfig`, the `FlagBootstrap` type, the `bootstrap` prop of
-  `<MiraProvider>` and the `mirafive-flags` block it rendered. Gone from `/server`:
-  `flagsFor()`, `<MiraFlagsScript>`, `FlagUnit` and `UserFlags`. The server entry no longer
-  reads `next/headers`. Events, pageviews, `useMira`, `useTrackOnMount`, `mira()`, consent and
-  opt-out are unchanged.
-- Statistics is the only consent purpose; `experiments` and `targeting` are gone. A consent
-  call that still passes either key is accepted and the keys are ignored.
+### Added
 
-## 1.0.0 — 2026-09-27
+- a provider that reads `NEXT_PUBLIC_MIRAFIVE_KEY`; `mira()` on the server, flushed
+  with `after()`; refuses to load the server entry in the browser.
 
-First release on the v1 protocol, written from scratch over `@mirafive/sdk-react`,
-`@mirafive/sdk-browser` and `@mirafive/sdk-server` 1.0.
+### Migrating from 1.x
 
-- Client entry (`"use client"`): `<MiraProvider>` creates the browser client once, from
-  `websiteKey` or `NEXT_PUBLIC_MIRAFIVE_KEY`, adds `pageviews()` unless `plugins` has one,
-  renders the flag `bootstrap` as the `mirafive-flags` block and passes it to the hooks;
-  warns about a missing key in every build and about a changed plugin set in development;
-  re-exports `useMira`, `useFlag`, `useFlagConfig` and `useTrackOnMount`.
-- `/server` (imports `server-only`): `mira()` (process-wide client from `MIRAFIVE_SECRET_KEY`, flushed
-  with `after()`), `flagsFor(unit)` (reads `Sec-GPC`/`DNT` through `next/headers` into
-  `optedOut`, exposures handed to `after()`), `<MiraFlagsScript>`.
-- `examples/app-router`, built with `next build` against packed tarballs.
-- No router hooks and no `Suspense` boundary: `pageviews()` counts every navigation.
+- **Keys:** projects have a public key (`mira_pk_…`, browser and apps) and a secret key
+  (`mira_sk_…`, servers). `mf_…` website and secret keys are gone. Every SDK refuses the wrong
+  kind of key with a clear message.
+- **Host:** `https://events.mirafive.io` (was `collect.mirafive.io`).
+- **Environment:** `MIRAFIVE_SECRET_KEY` and `MIRAFIVE_HOST` on servers; the public key as
+  `NEXT_PUBLIC_MIRAFIVE_KEY`, `VITE_MIRAFIVE_KEY`, `PUBLIC_MIRAFIVE_KEY` (Astro),
+  `NUXT_PUBLIC_MIRAFIVE_KEY` or `MIRAFIVE_PUBLIC_KEY` (PHP templates).
+- **Consent:** there are no modes any more. The browser SDK follows the site's consent banner
+  (`consent: "auto"`) and collects what each tier allows: cookieless without consent, an
+  anonymous id with analytics consent, a user with `identify`. Server events carry the consent
+  they were collected under (default `not_applicable`).
+- **Revenue:** `revenue()` on the server SDKs, in integer minor units with an ISO currency,
+  `entryId` (replaces `payment_id`), `entryKind`, fees, tax, refunds and subscriptions. Revenue
+  properties on plain events are no longer read.
