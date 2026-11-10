@@ -5,7 +5,7 @@
     "": {
       "name": "@mirafive/next",
       "dependencies": {
-        "@mirafive/node": "^2.2.1",
+        "@mirafive/node": "^2.3.2",
         "@mirafive/react": "^2.0.1",
       },
       "devDependencies": {
@@ -82,9 +82,9 @@
 
     "@img/sharp-win32-x64": ["@img/sharp-win32-x64@0.35.5", "", { "os": "win32", "cpu": "x64" }, "sha512-x76eH0vEiHlcMQu8Y8IenntaACtddpT6W0wmXtWrnKcnKI7ME5DdgqhAD6SEWOEl1v2zDvkZDhFA9KnURwpfqg=="],
 
-    "@mirafive/node": ["@mirafive/node@2.2.1", "", { "dependencies": { "@mirafive/protocol": "^2.2.1" } }, "sha512-HqRpv1G/ZgDbA00Fbub9ypqXVoGhnucqSezJ84Xtqr8+ntJ6ZpbCXqqCaEatZ/BMU1+ZePp4mZ7UrpAWnriCoQ=="],
+    "@mirafive/node": ["@mirafive/node@2.3.2", "", { "dependencies": { "@mirafive/protocol": "^2.3.0" } }, "sha512-t5kf5u9ZKNBTxf+kNbEY/regFkrI2LPmJW4lSgMKwsUfYUkrHXNUkY2rhKIZVkKOtmmnjX3LpSUu836HvOPH6Q=="],
 
-    "@mirafive/protocol": ["@mirafive/protocol@2.2.1", "", { "bin": { "mirafive-validate": "dist/cli.js" } }, "sha512-3ocDgDZQS3TPrSIRaRag/cCoRuDpxIGpFEcuMjQA7gPTd8NdTzsQmW9rBfqQv6efnJPn+1IMk4dswxhW7r8t8w=="],
+    "@mirafive/protocol": ["@mirafive/protocol@2.3.0", "", { "bin": { "mirafive-validate": "dist/cli.js" } }, "sha512-XCBV7CsJ8AVnExrK4sY+GwBYCOpoRp1ucazUzc35R83Vu+hEPe3m1YlgRAASxuHcTIaU3Lmbj7ZVc1oNH+QH4g=="],
 
     "@mirafive/react": ["@mirafive/react@2.0.1", "", { "dependencies": { "@mirafive/web": "^2.0.2" }, "peerDependencies": { "react": ">=18" } }, "sha512-sasUrjvyByG4EAfxYed5dd+6DfuVNM8TdIs+B4bx9YsG4YRLE8fxMmYK8QMtI5S88ov4Phf20gRMXifXFIs9Vw=="],
 
@@ -293,5 +293,7 @@
     "typescript": ["typescript@7.0.2", "", { "optionalDependencies": { "@typescript/typescript-aix-ppc64": "7.0.2", "@typescript/typescript-darwin-arm64": "7.0.2", "@typescript/typescript-darwin-x64": "7.0.2", "@typescript/typescript-freebsd-arm64": "7.0.2", "@typescript/typescript-freebsd-x64": "7.0.2", "@typescript/typescript-linux-arm": "7.0.2", "@typescript/typescript-linux-arm64": "7.0.2", "@typescript/typescript-linux-loong64": "7.0.2", "@typescript/typescript-linux-mips64el": "7.0.2", "@typescript/typescript-linux-ppc64": "7.0.2", "@typescript/typescript-linux-riscv64": "7.0.2", "@typescript/typescript-linux-s390x": "7.0.2", "@typescript/typescript-linux-x64": "7.0.2", "@typescript/typescript-netbsd-arm64": "7.0.2", "@typescript/typescript-netbsd-x64": "7.0.2", "@typescript/typescript-openbsd-arm64": "7.0.2", "@typescript/typescript-openbsd-x64": "7.0.2", "@typescript/typescript-sunos-x64": "7.0.2", "@typescript/typescript-win32-arm64": "7.0.2", "@typescript/typescript-win32-x64": "7.0.2" }, "bin": { "tsc": "bin/tsc" } }, "sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA=="],
 
     "undici-types": ["undici-types@8.9.0", "", {}, "sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg=="],
+
+    "@mirafive/web/@mirafive/protocol": ["@mirafive/protocol@2.2.1", "", { "bin": { "mirafive-validate": "dist/cli.js" } }, "sha512-3ocDgDZQS3TPrSIRaRag/cCoRuDpxIGpFEcuMjQA7gPTd8NdTzsQmW9rBfqQv6efnJPn+1IMk4dswxhW7r8t8w=="],
   }
 }

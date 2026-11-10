@@ -79,6 +79,27 @@ works in Route Handlers, Server Actions, Server Components and middleware. Impor
 server API (`track`, `identify`, `group`, `revenue`, `touchpoint`) is in the
 [`@mirafive/node` README](https://github.com/mirafive/sdk-node#readme).
 
+### Erasing a person (GDPR Art. 17)
+
+```ts
+// app/api/privacy/route.ts
+import { mira } from "@mirafive/next/server";
+
+export async function DELETE(request: Request) {
+  const { customerId } = await request.json();
+  const proof = await mira().deletePerson(customerId); // { request_id, deleted, revenue_kept, … }
+  return Response.json({ requestId: proof.request_id });
+}
+```
+
+Erases the person with the same effect as the dashboard's People page: events, devices, traits,
+ids in other systems and touchpoints. Revenue stays in the totals, without the person. Unlike the
+event methods it runs now, resolves with the proof (`request_id`, rows `deleted` per table) and
+throws a `MiraError`: `error.retryable` is true for a busy or unreachable ingest, false for a wrong
+key or a bad id. The erasure is idempotent: an unknown or already erased person resolves with zero
+rows, so a retry is always safe. Events that name the person afterwards are refused for 30 days:
+stop sending them. Details: [`deletePerson` in `@mirafive/node`](https://github.com/mirafive/sdk-node#erasing-a-person-gdpr-art-17).
+
 ## For AI coding assistants
 
 Rules for integrating MIRA FIVE correctly. They hold for every MIRA FIVE SDK.

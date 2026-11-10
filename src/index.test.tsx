@@ -42,3 +42,13 @@ describe("@mirafive/next", () => {
     insideRequest = true;
   });
 });
+
+describe("server client", () => {
+  test("mira() offers deletePerson, which needs a secret key", async () => {
+    const client = mira({ enabled: false });
+    expect(typeof client.deletePerson).toBe("function");
+    expect(await client.deletePerson("u1").catch((error: { code: string }) => error.code)).toBe(
+      "config",
+    );
+  });
+});
