@@ -1,6 +1,6 @@
 {
   "name": "@mirafive/next",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "MIRA FIVE for Next.js: a client provider that reads NEXT_PUBLIC_MIRAFIVE_KEY, React hooks, and a server client that sends after the response with after().",
   "keywords": [
     "analytics",
@@ -54,7 +54,7 @@
     "typecheck": "bun check"
   },
   "dependencies": {
-    "@mirafive/node": "^2.2.1",
+    "@mirafive/node": "^2.3.2",
     "@mirafive/react": "^2.0.1"
   },
   "devDependencies": {
