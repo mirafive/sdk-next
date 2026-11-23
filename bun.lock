@@ -6,7 +6,7 @@
       "name": "@mirafive/next",
       "dependencies": {
         "@mirafive/node": "^2.3.2",
-        "@mirafive/react": "^2.0.1",
+        "@mirafive/react": "^2.0.3",
       },
       "devDependencies": {
         "@types/bun": "^1.4.4",
@@ -86,9 +86,9 @@
 
     "@mirafive/protocol": ["@mirafive/protocol@2.3.0", "", { "bin": { "mirafive-validate": "dist/cli.js" } }, "sha512-XCBV7CsJ8AVnExrK4sY+GwBYCOpoRp1ucazUzc35R83Vu+hEPe3m1YlgRAASxuHcTIaU3Lmbj7ZVc1oNH+QH4g=="],
 
-    "@mirafive/react": ["@mirafive/react@2.0.1", "", { "dependencies": { "@mirafive/web": "^2.0.2" }, "peerDependencies": { "react": ">=18" } }, "sha512-sasUrjvyByG4EAfxYed5dd+6DfuVNM8TdIs+B4bx9YsG4YRLE8fxMmYK8QMtI5S88ov4Phf20gRMXifXFIs9Vw=="],
+    "@mirafive/react": ["@mirafive/react@2.0.3", "", { "dependencies": { "@mirafive/web": "^2.1.1" }, "peerDependencies": { "react": ">=18" } }, "sha512-1O2Aea1cVUK2OhhXHsL4H0x5Z40/s5W2l5cngJ7QWpyB3ksZajd2tqx5R4cZF8/8oXK3D1BrvUlUTCa61GbQiQ=="],
 
-    "@mirafive/web": ["@mirafive/web@2.0.2", "", { "dependencies": { "@mirafive/protocol": "^2.2.1" } }, "sha512-pzxXj74O6xvKaGMAflH4MbJj1x4UBFcTMeOnIalSKojSFc/IBKYCRWH6yvkHxrrHxo8OtCtYxYZJ4ROqWhLyDQ=="],
+    "@mirafive/web": ["@mirafive/web@2.1.1", "", { "dependencies": { "@mirafive/protocol": "^2.4.0" } }, "sha512-xnY21iJyF1P+3ylT1NrkQXZuhHHdbK1c3fJ8PtRBlujz63dvaO4xdId1zVMR886umfbsJHxMjtiBYZh7dVjQBw=="],
 
     "@next/env": ["@next/env@16.4.5", "", {}, "sha512-JwSPwpdkZL5VMl2jA/q+JI8MZdweAL3xmw5/tb9y/TLtmS0YXZnmYDzSihwk8xTj1OL+WM53gTqaj96yuLp6Xw=="],
 
@@ -294,6 +294,6 @@
 
     "undici-types": ["undici-types@8.9.0", "", {}, "sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg=="],
 
-    "@mirafive/web/@mirafive/protocol": ["@mirafive/protocol@2.2.1", "", { "bin": { "mirafive-validate": "dist/cli.js" } }, "sha512-3ocDgDZQS3TPrSIRaRag/cCoRuDpxIGpFEcuMjQA7gPTd8NdTzsQmW9rBfqQv6efnJPn+1IMk4dswxhW7r8t8w=="],
+    "@mirafive/web/@mirafive/protocol": ["@mirafive/protocol@2.4.0", "", { "bin": { "mirafive-validate": "dist/cli.js" } }, "sha512-v4vmvW2xh3qXjLSpy/Utuhatr0uW53CKNOP/2aEMiK571Ib0szuPiL2HlM7t7zyjLDSXi8q1Fj0ONSQQFYRxPQ=="],
   }
 }
